@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>서울시 노원구</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'맑은 고딕','Noto Sans KR',sans-serif;background:#0f0f1a}
+#hdr{background:#1a1a2e;color:#fff;padding:9px 16px;display:flex;align-items:center;gap:12px;border-bottom:2px solid #2563eb}
+#hdr h1{font-size:16px;font-weight:700}
+#hdr .s{font-size:11px;color:#9ca3af}
+#map{height:calc(100vh - 44px)}
+.al{background:#fff;border:2px solid #1e3a6e;border-radius:4px;padding:3px 6px;font-size:10px;line-height:1.4;white-space:nowrap;box-shadow:0 1px 5px rgba(0,0,0,.4)}
+.al.st{background:#fffbeb;border-color:#d97706;border-width:2.5px}
+.al .n{font-weight:700;font-size:10.5px;color:#1e3a6e}
+.al.st .n{color:#92400e}
+.al .i{color:#666;font-size:9.5px}
+#leg{position:absolute;bottom:26px;right:10px;z-index:9999;background:rgba(255,255,255,.94);border:1px solid #d1d5db;border-radius:8px;padding:8px 11px;font-size:11px;box-shadow:0 2px 8px rgba(0,0,0,.25);min-width:130px}
+#leg h4{font-size:11.5px;margin-bottom:5px;font-weight:700;color:#111}
+#leg .r{display:flex;align-items:center;gap:5px;margin:2px 0}
+.dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+</style></head>
+<body>
+<div id="hdr"><h1>🗺 서울시 노원구</h1><span class="s">⭐ 저평가 추천단지 | 클릭 → 상세정보</span></div>
+<div id="map"></div>
+<div id="leg">
+<h4>범례</h4>
+<div class="r"><div class="dot" style="background:#2563eb"></div>지하철역</div>
+<div class="r"><div class="dot" style="background:#dc2626"></div>종합병원</div>
+<div class="r"><div class="dot" style="background:#7c3aed"></div>백화점/마트</div>
+<div class="r"><div class="dot" style="background:#16a34a"></div>학교/학원가</div>
+<div class="r"><div class="dot" style="background:#ea580c"></div>상권</div>
+<div class="r"><div class="dot" style="background:#0891b2"></div>공원</div>
+<div class="r"><span style="font-size:12px">⭐</span> 저평가 추천</div>
+</div>
+<script>
+var map=L.map('map');
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
+var bounds=[];
+var apts=[{"gu": "노원구", "dong": "공릉동", "name": "공릉신도1차", "year": "02", "units": 342, "pyeong": 33, "star": false, "lat": 37.6164, "lng": 127.0716}, {"gu": "노원구", "dong": "공릉동", "name": "공릉풍림아이원", "year": "01", "units": 1601, "pyeong": 23, "star": false, "lat": 37.6164, "lng": 127.073}, {"gu": "노원구", "dong": "공릉동", "name": "동신", "year": "99", "units": 452, "pyeong": 33, "star": false, "lat": 37.6164, "lng": 127.0744}, {"gu": "노원구", "dong": "공릉동", "name": "삼익포레스트", "year": "95", "units": 845, "pyeong": 32, "star": false, "lat": 37.6175, "lng": 127.0716}, {"gu": "노원구", "dong": "공릉동", "name": "우방", "year": "00", "units": 494, "pyeong": 32, "star": false, "lat": 37.6175, "lng": 127.073}, {"gu": "노원구", "dong": "공릉동", "name": "우성(공릉)", "year": "95", "units": 363, "pyeong": 34, "star": false, "lat": 37.6175, "lng": 127.0744}, {"gu": "노원구", "dong": "공릉동", "name": "태강", "year": "99", "units": 1676, "pyeong": 25, "star": false, "lat": 37.6186, "lng": 127.0716}, {"gu": "노원구", "dong": "공릉동", "name": "화랑타운", "year": "00", "units": 436, "pyeong": 32, "star": false, "lat": 37.6186, "lng": 127.073}, {"gu": "노원구", "dong": "상계동", "name": "노원롯데캐슬시그니처", "year": "23", "units": 1163, "pyeong": 22, "star": true, "lat": 37.65455, "lng": 127.0535}, {"gu": "노원구", "dong": "상계동", "name": "노원센트럴푸르지오", "year": "20", "units": 810, "pyeong": 24, "star": false, "lat": 37.65455, "lng": 127.0549}, {"gu": "노원구", "dong": "상계동", "name": "동아불암", "year": "99", "units": 673, "pyeong": 33, "star": false, "lat": 37.65455, "lng": 127.0563}, {"gu": "노원구", "dong": "상계동", "name": "미도", "year": "88", "units": 600, "pyeong": 35, "star": false, "lat": 37.65455, "lng": 127.0577}, {"gu": "노원구", "dong": "상계동", "name": "보람", "year": "88", "units": 3315, "pyeong": 33, "star": false, "lat": 37.65565, "lng": 127.0535}, {"gu": "노원구", "dong": "상계동", "name": "불암현대", "year": "99", "units": 826, "pyeong": 33, "star": false, "lat": 37.65565, "lng": 127.0549}, {"gu": "노원구", "dong": "상계동", "name": "상계동양메이저(동양엔파트)", "year": "03", "units": 448, "pyeong": 32, "star": false, "lat": 37.65565, "lng": 127.0563}, {"gu": "노원구", "dong": "상계동", "name": "상계불암대림", "year": "00", "units": 634, "pyeong": 33, "star": false, "lat": 37.65565, "lng": 127.0577}, {"gu": "노원구", "dong": "상계동", "name": "상계중앙하이츠1차", "year": "97", "units": 437, "pyeong": 30, "star": false, "lat": 37.65675, "lng": 127.0535}, {"gu": "노원구", "dong": "상계동", "name": "상계한일유앤아이", "year": "05", "units": 305, "pyeong": 32, "star": false, "lat": 37.65675, "lng": 127.0549}, {"gu": "노원구", "dong": "상계동", "name": "상계현대3차", "year": "99", "units": 494, "pyeong": 31, "star": false, "lat": 37.65675, "lng": 127.0563}, {"gu": "노원구", "dong": "상계동", "name": "수락리버시티3단지", "year": "09", "units": 473, "pyeong": 33, "star": true, "lat": 37.65675, "lng": 127.0577}, {"gu": "노원구", "dong": "상계동", "name": "수락리버시티4단지", "year": "09", "units": 548, "pyeong": 34, "star": false, "lat": 37.65785, "lng": 127.0535}, {"gu": "노원구", "dong": "상계동", "name": "수락파크빌", "year": "01", "units": 468, "pyeong": 32, "star": false, "lat": 37.65785, "lng": 127.0549}, {"gu": "노원구", "dong": "상계동", "name": "중계센트럴파크", "year": "16", "units": 457, "pyeong": 37, "star": true, "lat": 37.65785, "lng": 127.0563}, {"gu": "노원구", "dong": "상계동", "name": "한신3차", "year": "90", "units": 348, "pyeong": 31, "star": false, "lat": 37.65785, "lng": 127.0577}, {"gu": "노원구", "dong": "월계동", "name": "녹천역두산위브", "year": "17", "units": 326, "pyeong": 33, "star": false, "lat": 37.6204, "lng": 127.0389}, {"gu": "노원구", "dong": "월계동", "name": "동신", "year": "83", "units": 864, "pyeong": 23, "star": false, "lat": 37.6204, "lng": 127.0403}, {"gu": "노원구", "dong": "월계동", "name": "삼호4차", "year": "87", "units": 910, "pyeong": 21, "star": false, "lat": 37.6204, "lng": 127.0417}, {"gu": "노원구", "dong": "월계동", "name": "청백4단지", "year": "98", "units": 520, "pyeong": 33, "star": false, "lat": 37.6215, "lng": 127.0389}, {"gu": "노원구", "dong": "월계동", "name": "현대(929)", "year": "00", "units": 1281, "pyeong": 26, "star": false, "lat": 37.6215, "lng": 127.0403}, {"gu": "노원구", "dong": "중계동", "name": "경남,롯데,상아", "year": "89", "units": 1890, "pyeong": 27, "star": false, "lat": 37.63915, "lng": 127.0712}, {"gu": "노원구", "dong": "중계동", "name": "삼성", "year": "99", "units": 478, "pyeong": 33, "star": false, "lat": 37.63915, "lng": 127.0726}, {"gu": "노원구", "dong": "중계동", "name": "성원", "year": "96", "units": 402, "pyeong": 25, "star": false, "lat": 37.63915, "lng": 127.074}, {"gu": "노원구", "dong": "중계동", "name": "양지대림2차", "year": "99", "units": 652, "pyeong": 25, "star": false, "lat": 37.63915, "lng": 127.0754}, {"gu": "노원구", "dong": "중계동", "name": "염광", "year": "96", "units": 791, "pyeong": 26, "star": false, "lat": 37.64025, "lng": 127.0712}, {"gu": "노원구", "dong": "중계동", "name": "중계금호타운", "year": "97", "units": 424, "pyeong": 33, "star": false, "lat": 37.64025, "lng": 127.0726}, {"gu": "노원구", "dong": "중계동", "name": "중계무지개", "year": "91", "units": 2433, "pyeong": 22, "star": false, "lat": 37.64025, "lng": 127.074}, {"gu": "노원구", "dong": "중계동", "name": "중계주공10단지", "year": "95", "units": 330, "pyeong": 24, "star": false, "lat": 37.64025, "lng": 127.0754}, {"gu": "노원구", "dong": "중계동", "name": "중계주공5단지", "year": "92", "units": 2328, "pyeong": 24, "star": false, "lat": 37.64135, "lng": 127.0712}, {"gu": "노원구", "dong": "중계동", "name": "중앙하이츠", "year": "98", "units": 499, "pyeong": 32, "star": false, "lat": 37.64135, "lng": 127.0726}, {"gu": "노원구", "dong": "중계동", "name": "한화꿈에그린", "year": "05", "units": 448, "pyeong": 33, "star": false, "lat": 37.64135, "lng": 127.074}, {"gu": "노원구", "dong": "중계동", "name": "현대6차", "year": "99", "units": 453, "pyeong": 33, "star": false, "lat": 37.64135, "lng": 127.0754}, {"gu": "노원구", "dong": "하계동", "name": "하계현대", "year": "97", "units": 730, "pyeong": 32, "star": false, "lat": 37.63245, "lng": 127.0706}, {"gu": "노원구", "dong": "하계동", "name": "학여울청구", "year": "99", "units": 1476, "pyeong": 25, "star": false, "lat": 37.63245, "lng": 127.072}];
+apts.forEach(function(a){
+  var s=a.star;
+  var h='<div class="al'+(s?' st':'')+'"><div class="n">'+(s?'⭐ ':'')+a.name+'</div><div class="i">\''+a.year+'년 / '+a.units+'세대</div><div class="i">'+a.pyeong+'평</div></div>';
+  var icon=L.divIcon({className:'',html:h,iconAnchor:[0,0]});
+  L.marker([a.lat,a.lng],{icon:icon}).addTo(map)
+   .bindPopup('<b>'+(s?'⭐ ':'')+a.name+'</b><br>\''+a.year+'년 | '+a.units+'세대 | '+a.pyeong+'평'+(s?'<br><span style="color:#d97706;font-weight:700">저평가 추천단지</span>':''));
+  bounds.push([a.lat,a.lng]);
+});
+var COL={subway:'#2563eb',hospital:'#dc2626',dept:'#7c3aed',mart:'#7c3aed',school:'#16a34a',commercial:'#ea580c',park:'#0891b2'};
+var EMJ={subway:'🚇',hospital:'🏥',dept:'🏬',mart:'🛒',school:'📚',commercial:'🏪',park:'🌳'};
+var ams=[{"name": "노원역(7호선/4호선)", "lat": 37.6556, "lng": 127.0563, "type": "subway"}, {"name": "중계역(7호선)", "lat": 37.6399, "lng": 127.0724, "type": "subway"}, {"name": "하계역(7호선)", "lat": 37.634, "lng": 127.0716, "type": "subway"}, {"name": "공릉역(경춘선)", "lat": 37.62, "lng": 127.0726, "type": "subway"}, {"name": "월계역(경의중앙선)", "lat": 37.6265, "lng": 127.0375, "type": "subway"}, {"name": "서울의료원", "lat": 37.6448, "lng": 127.0735, "type": "hospital"}, {"name": "노원롯데백화점", "lat": 37.6556, "lng": 127.0575, "type": "dept"}, {"name": "중계 학원가", "lat": 37.641, "lng": 127.0735, "type": "school"}, {"name": "불암산", "lat": 37.66, "lng": 127.08, "type": "park"}];
+ams.forEach(function(a){
+  var c=COL[a.type]||'#666';var e=EMJ[a.type]||'📍';
+  L.circleMarker([a.lat,a.lng],{radius:7,fillColor:c,color:'#fff',weight:2,opacity:1,fillOpacity:.9}).addTo(map)
+   .bindTooltip(e+' '+a.name,{permanent:true,direction:'right',offset:[8,0]})
+   .bindPopup('<b>'+e+' '+a.name+'</b>');
+});
+if(bounds.length>0)map.fitBounds(bounds,{padding:[50,50]});
+</script></body></html>

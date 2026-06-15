@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>용인시 수지구</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'맑은 고딕','Noto Sans KR',sans-serif;background:#0f0f1a}
+#hdr{background:#1a1a2e;color:#fff;padding:9px 16px;display:flex;align-items:center;gap:12px;border-bottom:2px solid #2563eb}
+#hdr h1{font-size:16px;font-weight:700}
+#hdr .s{font-size:11px;color:#9ca3af}
+#map{height:calc(100vh - 44px)}
+.al{
+  background:rgba(255,255,255,0.95);
+  border:2px solid #1e3a6e;
+  border-radius:5px;
+  padding:5px 8px;
+  font-size:12px;
+  line-height:1.45;
+  white-space:nowrap;
+  box-shadow:0 2px 6px rgba(0,0,0,.45);
+  pointer-events:auto;
+}
+.al.st{background:#fffbeb;border-color:#d97706;border-width:2.5px}
+.al .n{font-weight:800;font-size:13px;color:#1e3a6e;letter-spacing:-0.3px}
+.al.st .n{color:#92400e}
+.al .i{color:#555;font-size:11px}
+#leg{position:absolute;bottom:26px;right:10px;z-index:9999;background:rgba(255,255,255,.96);border:1px solid #d1d5db;border-radius:8px;padding:8px 12px;font-size:11.5px;box-shadow:0 2px 8px rgba(0,0,0,.25);min-width:135px}
+#leg h4{font-size:12px;margin-bottom:5px;font-weight:700;color:#111}
+#leg .r{display:flex;align-items:center;gap:5px;margin:3px 0}
+.dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+</style></head>
+<body>
+<div id="hdr"><h1>🗺 용인시 수지구</h1><span class="s">⭐ 저평가 추천단지 | 단지 클릭 → 상세정보</span></div>
+<div id="map"></div>
+<div id="leg">
+<h4>범례</h4>
+<div class="r"><div class="dot" style="background:#2563eb"></div>지하철역</div>
+<div class="r"><div class="dot" style="background:#dc2626"></div>종합병원</div>
+<div class="r"><div class="dot" style="background:#7c3aed"></div>백화점/마트</div>
+<div class="r"><div class="dot" style="background:#16a34a"></div>학교/학원가</div>
+<div class="r"><div class="dot" style="background:#ea580c"></div>상권</div>
+<div class="r"><div class="dot" style="background:#0891b2"></div>공원</div>
+<div class="r"><span style="font-size:13px">⭐</span> 저평가 추천</div>
+</div>
+<script>
+var map=L.map('map');
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
+var bounds=[];
+var apts=[{"name": "수진마을3단지우미이노스빌", "year": "04", "units": 396, "pyeong": 26, "lat": 37.3356695, "lng": 127.0944537, "star": false}, {"name": "광교상현마을현대", "year": "01", "units": 498, "pyeong": 33, "lat": 37.301813, "lng": 127.0733478, "star": false}, {"name": "광교쌍용포레듀엔3단지", "year": "01", "units": 987, "pyeong": 36, "lat": 37.3017206, "lng": 127.0785388, "star": false}, {"name": "만현마을9단지엘지자이", "year": "03", "units": 1034, "pyeong": 35, "lat": 37.3043442, "lng": 127.0900257, "star": false}, {"name": "만현마을쌍용1차", "year": "01", "units": 992, "pyeong": 32, "lat": 37.3060614, "lng": 127.0883475, "star": false}, {"name": "벽산블루밍", "year": "98", "units": 631, "pyeong": 25, "lat": 37.3087697, "lng": 127.0776133, "star": false}, {"name": "상현동일스위트", "year": "01", "units": 312, "pyeong": 37, "lat": 37.3041874, "lng": 127.0821904, "star": false}, {"name": "성복역리버파크", "year": "98", "units": 702, "pyeong": 24, "lat": 37.3137271, "lng": 127.087485, "star": true}, {"name": "진산마을성원상떼빌", "year": "97", "units": 1744, "pyeong": 33, "lat": 37.3128062, "lng": 127.0927932, "star": false}, {"name": "풍산", "year": "97", "units": 438, "pyeong": 32, "lat": 37.3101605, "lng": 127.0788803, "star": false}, {"name": "성동마을수지자이", "year": "06", "units": 680, "pyeong": 37, "lat": 37.3194246, "lng": 127.0682377, "star": false}, {"name": "용인성복아이파크", "year": "12", "units": 351, "pyeong": 35, "lat": 37.3224965, "lng": 127.0612962, "star": false}, {"name": "서홍마을한화꿈에그린", "year": "04", "units": 404, "pyeong": 33, "lat": 37.3233504, "lng": 127.0811154, "star": false}, {"name": "신봉마을3단지동일하이빌", "year": "10", "units": 594, "pyeong": 34, "lat": 37.3263304, "lng": 127.0661529, "star": false}, {"name": "신봉마을4단지동일하이빌", "year": "10", "units": 636, "pyeong": 34, "lat": 37.3288072, "lng": 127.0646426, "star": false}, {"name": "신봉마을LG자이1차", "year": "04", "units": 1990, "pyeong": 33, "lat": 37.3260826, "lng": 127.077931, "star": false}, {"name": "힐스테이트광교산", "year": "22", "units": 789, "pyeong": 30, "lat": 37.3333729, "lng": 127.0679627, "star": true}, {"name": "꽃메마을현대홈타운4차3단지", "year": "04", "units": 770, "pyeong": 34, "lat": 37.3227959, "lng": 127.1176536, "star": false}, {"name": "내대지마을건영캐스빌", "year": "04", "units": 1254, "pyeong": 34, "lat": 37.3335365, "lng": 127.1261796, "star": false}, {"name": "대주한신", "year": "98", "units": 311, "pyeong": 25, "lat": 37.3278558, "lng": 127.112743, "star": false}, {"name": "대지마을현대홈타운2차", "year": "01", "units": 346, "pyeong": 32, "lat": 37.331046, "lng": 127.1149301, "star": false}, {"name": "더리버하임", "year": "99", "units": 336, "pyeong": 33, "lat": 37.3283641, "lng": 127.1118192, "star": false}, {"name": "도담마을7단지뜨리에체", "year": "99", "units": 430, "pyeong": 33, "lat": 37.324878, "lng": 127.1142935, "star": false}, {"name": "도담마을아이파크", "year": "98", "units": 360, "pyeong": 33, "lat": 37.3290126, "lng": 127.1180073, "star": false}, {"name": "도담마을우미이노스빌", "year": "04", "units": 418, "pyeong": 26, "lat": 37.3260968, "lng": 127.1194225, "star": false}, {"name": "도담마을죽전파크빌", "year": "97", "units": 561, "pyeong": 33, "lat": 37.3278087, "lng": 127.1162583, "star": false}, {"name": "도담마을한양수자인", "year": "04", "units": 332, "pyeong": 25, "lat": 37.325067, "lng": 127.1188271, "star": false}, {"name": "동성1차", "year": "97", "units": 684, "pyeong": 33, "lat": 37.3306222, "lng": 127.1105501, "star": false}, {"name": "새터마을죽전힐스테이트", "year": "04", "units": 1998, "pyeong": 35, "lat": 37.3343566, "lng": 127.1218167, "star": false}, {"name": "성현마을우미이노스빌", "year": "04", "units": 538, "pyeong": 26, "lat": 37.3247, "lng": 127.1237192, "star": false}, {"name": "용인죽전동부센트레빌", "year": "98", "units": 536, "pyeong": 33, "lat": 37.3303655, "lng": 127.1247522, "star": false}, {"name": "죽전아이뷰", "year": "99", "units": 432, "pyeong": 31, "lat": 37.3322771, "lng": 127.1101478, "star": false}, {"name": "죽전퍼스트하임", "year": "99", "units": 480, "pyeong": 32, "lat": 37.3297523, "lng": 127.114548, "star": false}, {"name": "현대1차", "year": "99", "units": 702, "pyeong": 24, "lat": 37.3318059, "lng": 127.1297138, "star": false}, {"name": "e편한세상죽전프리미어포레", "year": "24", "units": 430, "pyeong": 33, "lat": 37.3282177, "lng": 127.1298528, "star": true}, {"name": "동부", "year": "95", "units": 612, "pyeong": 24, "lat": 37.3281614, "lng": 127.0935737, "star": false}, {"name": "동아.삼익.풍림", "year": "94", "units": 1620, "pyeong": 24, "lat": 37.3324334, "lng": 127.0958527, "star": false}, {"name": "보원", "year": "94", "units": 619, "pyeong": 24, "lat": 37.3267426, "lng": 127.090194, "star": false}, {"name": "수지광교산아이파크", "year": "20", "units": 537, "pyeong": 34, "lat": 37.327141, "lng": 127.082958, "star": false}];
+apts.forEach(function(a){
+  var s=a.star;
+  var h='<div class="al'+(s?' st':'')+'"><div class="n">'+(s?'⭐ ':'')+a.name+'</div>'
+    +'<div class="i">\''+a.year+'년 / '+a.units+'세대</div>'
+    +'<div class="i">'+a.pyeong+'평</div></div>';
+  var icon=L.divIcon({className:'',html:h,iconAnchor:[0,0]});
+  L.marker([a.lat,a.lng],{icon:icon,zIndexOffset:s?1000:0}).addTo(map)
+   .bindPopup('<b style="font-size:14px">'+(s?'⭐ ':'')+a.name+'</b><br><br>\''+a.year+'년 준공 | '+a.units+'세대 | '+a.pyeong+'평'+(s?'<br><br><span style="color:#d97706;font-weight:700">⭐ 저평가 추천단지</span>':''));
+  bounds.push([a.lat,a.lng]);
+});
+var COL={subway:'#2563eb',hospital:'#dc2626',dept:'#7c3aed',mart:'#7c3aed',school:'#16a34a',commercial:'#ea580c',park:'#0891b2'};
+var EMJ={subway:'🚇',hospital:'🏥',dept:'🏬',mart:'🛒',school:'📚',commercial:'🏪',park:'🌳'};
+var ams=[{"name": "죽전역(분당선)", "lat": 37.3393, "lng": 127.1083, "type": "subway"}, {"name": "성복역(신분당선)", "lat": 37.2768, "lng": 127.0423, "type": "subway"}, {"name": "상현역(신분당선)", "lat": 37.2839, "lng": 127.0484, "type": "subway"}, {"name": "동천역(신분당선)", "lat": 37.3414, "lng": 127.0904, "type": "subway"}, {"name": "분당서울대병원", "lat": 37.3594, "lng": 127.1022, "type": "hospital"}, {"name": "수지구청", "lat": 37.3203, "lng": 127.0963, "type": "commercial"}, {"name": "죽전 상권", "lat": 37.3385, "lng": 127.1102, "type": "commercial"}, {"name": "성복 학원가", "lat": 37.282, "lng": 127.046, "type": "school"}];
+ams.forEach(function(a){
+  var c=COL[a.type]||'#666';var e=EMJ[a.type]||'📍';
+  L.circleMarker([a.lat,a.lng],{radius:8,fillColor:c,color:'#fff',weight:2,opacity:1,fillOpacity:.9}).addTo(map)
+   .bindTooltip(e+' '+a.name,{permanent:true,direction:'right',offset:[9,0]})
+   .bindPopup('<b>'+e+' '+a.name+'</b>');
+});
+if(bounds.length>0)map.fitBounds(bounds,{padding:[60,60]});
+</script></body></html>

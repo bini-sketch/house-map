@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>서울시 강북구</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'맑은 고딕','Noto Sans KR',sans-serif;background:#0f0f1a}
+#hdr{background:#1a1a2e;color:#fff;padding:9px 16px;display:flex;align-items:center;gap:12px;border-bottom:2px solid #2563eb}
+#hdr h1{font-size:16px;font-weight:700}
+#hdr .s{font-size:11px;color:#9ca3af}
+#map{height:calc(100vh - 44px)}
+.al{background:#fff;border:2px solid #1e3a6e;border-radius:4px;padding:3px 6px;font-size:10px;line-height:1.4;white-space:nowrap;box-shadow:0 1px 5px rgba(0,0,0,.4)}
+.al.st{background:#fffbeb;border-color:#d97706;border-width:2.5px}
+.al .n{font-weight:700;font-size:10.5px;color:#1e3a6e}
+.al.st .n{color:#92400e}
+.al .i{color:#666;font-size:9.5px}
+#leg{position:absolute;bottom:26px;right:10px;z-index:9999;background:rgba(255,255,255,.94);border:1px solid #d1d5db;border-radius:8px;padding:8px 11px;font-size:11px;box-shadow:0 2px 8px rgba(0,0,0,.25);min-width:130px}
+#leg h4{font-size:11.5px;margin-bottom:5px;font-weight:700;color:#111}
+#leg .r{display:flex;align-items:center;gap:5px;margin:2px 0}
+.dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+</style></head>
+<body>
+<div id="hdr"><h1>🗺 서울시 강북구</h1><span class="s">⭐ 저평가 추천단지 | 클릭 → 상세정보</span></div>
+<div id="map"></div>
+<div id="leg">
+<h4>범례</h4>
+<div class="r"><div class="dot" style="background:#2563eb"></div>지하철역</div>
+<div class="r"><div class="dot" style="background:#dc2626"></div>종합병원</div>
+<div class="r"><div class="dot" style="background:#7c3aed"></div>백화점/마트</div>
+<div class="r"><div class="dot" style="background:#16a34a"></div>학교/학원가</div>
+<div class="r"><div class="dot" style="background:#ea580c"></div>상권</div>
+<div class="r"><div class="dot" style="background:#0891b2"></div>공원</div>
+<div class="r"><span style="font-size:12px">⭐</span> 저평가 추천</div>
+</div>
+<script>
+var map=L.map('map');
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
+var bounds=[];
+var apts=[{"gu": "강북구", "dong": "미아동", "name": "미아래미안1차", "year": "06", "units": 306, "pyeong": 24, "star": false, "lat": 37.6372, "lng": 127.0247}, {"gu": "강북구", "dong": "미아동", "name": "미아한일유앤아이", "year": "02", "units": 384, "pyeong": 28, "star": false, "lat": 37.6372, "lng": 127.0261}, {"gu": "강북구", "dong": "미아동", "name": "벽산라이브파크", "year": "04", "units": 1585, "pyeong": 24, "star": false, "lat": 37.6372, "lng": 127.0275}, {"gu": "강북구", "dong": "미아동", "name": "삼각산아이원", "year": "03", "units": 1344, "pyeong": 24, "star": true, "lat": 37.6383, "lng": 127.0247}, {"gu": "강북구", "dong": "미아동", "name": "한화포레나미아", "year": "25", "units": 497, "pyeong": 22, "star": true, "lat": 37.6383, "lng": 127.0261}, {"gu": "강북구", "dong": "수유동", "name": "수유래미안", "year": "01", "units": 690, "pyeong": 24, "star": true, "lat": 37.64315, "lng": 127.0141}, {"gu": "강북구", "dong": "수유동", "name": "수유벽산1차", "year": "93", "units": 1454, "pyeong": 26, "star": false, "lat": 37.64315, "lng": 127.0155}, {"gu": "강북구", "dong": "번동", "name": "해모로", "year": "03", "units": 430, "pyeong": 24, "star": false, "lat": 37.6465, "lng": 127.0366}];
+apts.forEach(function(a){
+  var s=a.star;
+  var h='<div class="al'+(s?' st':'')+'"><div class="n">'+(s?'⭐ ':'')+a.name+'</div><div class="i">\''+a.year+'년 / '+a.units+'세대</div><div class="i">'+a.pyeong+'평</div></div>';
+  var icon=L.divIcon({className:'',html:h,iconAnchor:[0,0]});
+  L.marker([a.lat,a.lng],{icon:icon}).addTo(map)
+   .bindPopup('<b>'+(s?'⭐ ':'')+a.name+'</b><br>\''+a.year+'년 | '+a.units+'세대 | '+a.pyeong+'평'+(s?'<br><span style="color:#d97706;font-weight:700">저평가 추천단지</span>':''));
+  bounds.push([a.lat,a.lng]);
+});
+var COL={subway:'#2563eb',hospital:'#dc2626',dept:'#7c3aed',mart:'#7c3aed',school:'#16a34a',commercial:'#ea580c',park:'#0891b2'};
+var EMJ={subway:'🚇',hospital:'🏥',dept:'🏬',mart:'🛒',school:'📚',commercial:'🏪',park:'🌳'};
+var ams=[{"name": "미아사거리역(4호선)", "lat": 37.6313, "lng": 127.029, "type": "subway"}, {"name": "미아역(4호선)", "lat": 37.6383, "lng": 127.0261, "type": "subway"}, {"name": "수유역(4호선)", "lat": 37.6437, "lng": 127.0148, "type": "subway"}, {"name": "강북삼성병원", "lat": 37.6418, "lng": 127.0165, "type": "hospital"}, {"name": "이마트 미아점", "lat": 37.633, "lng": 127.031, "type": "mart"}, {"name": "미아 상권", "lat": 37.6313, "lng": 127.029, "type": "commercial"}, {"name": "수유리 상권", "lat": 37.6437, "lng": 127.0148, "type": "commercial"}, {"name": "북서울꿈의숲", "lat": 37.6147, "lng": 127.0381, "type": "park"}, {"name": "강북 학원가", "lat": 37.643, "lng": 127.015, "type": "school"}];
+ams.forEach(function(a){
+  var c=COL[a.type]||'#666';var e=EMJ[a.type]||'📍';
+  L.circleMarker([a.lat,a.lng],{radius:7,fillColor:c,color:'#fff',weight:2,opacity:1,fillOpacity:.9}).addTo(map)
+   .bindTooltip(e+' '+a.name,{permanent:true,direction:'right',offset:[8,0]})
+   .bindPopup('<b>'+e+' '+a.name+'</b>');
+});
+if(bounds.length>0)map.fitBounds(bounds,{padding:[50,50]});
+</script></body></html>

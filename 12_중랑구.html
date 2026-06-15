@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>서울시 중랑구</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'맑은 고딕','Noto Sans KR',sans-serif;background:#0f0f1a}
+#hdr{background:#1a1a2e;color:#fff;padding:9px 16px;display:flex;align-items:center;gap:12px;border-bottom:2px solid #2563eb}
+#hdr h1{font-size:16px;font-weight:700}
+#hdr .s{font-size:11px;color:#9ca3af}
+#map{height:calc(100vh - 44px)}
+.al{background:#fff;border:2px solid #1e3a6e;border-radius:4px;padding:3px 6px;font-size:10px;line-height:1.4;white-space:nowrap;box-shadow:0 1px 5px rgba(0,0,0,.4)}
+.al.st{background:#fffbeb;border-color:#d97706;border-width:2.5px}
+.al .n{font-weight:700;font-size:10.5px;color:#1e3a6e}
+.al.st .n{color:#92400e}
+.al .i{color:#666;font-size:9.5px}
+#leg{position:absolute;bottom:26px;right:10px;z-index:9999;background:rgba(255,255,255,.94);border:1px solid #d1d5db;border-radius:8px;padding:8px 11px;font-size:11px;box-shadow:0 2px 8px rgba(0,0,0,.25);min-width:130px}
+#leg h4{font-size:11.5px;margin-bottom:5px;font-weight:700;color:#111}
+#leg .r{display:flex;align-items:center;gap:5px;margin:2px 0}
+.dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+</style></head>
+<body>
+<div id="hdr"><h1>🗺 서울시 중랑구</h1><span class="s">⭐ 저평가 추천단지 | 클릭 → 상세정보</span></div>
+<div id="map"></div>
+<div id="leg">
+<h4>범례</h4>
+<div class="r"><div class="dot" style="background:#2563eb"></div>지하철역</div>
+<div class="r"><div class="dot" style="background:#dc2626"></div>종합병원</div>
+<div class="r"><div class="dot" style="background:#7c3aed"></div>백화점/마트</div>
+<div class="r"><div class="dot" style="background:#16a34a"></div>학교/학원가</div>
+<div class="r"><div class="dot" style="background:#ea580c"></div>상권</div>
+<div class="r"><div class="dot" style="background:#0891b2"></div>공원</div>
+<div class="r"><span style="font-size:12px">⭐</span> 저평가 추천</div>
+</div>
+<script>
+var map=L.map('map');
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
+var bounds=[];
+var apts=[{"gu": "중랑구", "dong": "망우동", "name": "중랑숲리가", "year": "12", "units": 381, "pyeong": 23, "star": false, "lat": 37.59345, "lng": 127.0993}, {"gu": "중랑구", "dong": "망우동", "name": "신내역금강펜테리움센트럴파크", "year": "21", "units": 490, "pyeong": 31, "star": true, "lat": 37.59345, "lng": 127.1007}, {"gu": "중랑구", "dong": "망우동", "name": "중랑숲시티프라디움", "year": "22", "units": 403, "pyeong": 24, "star": false, "lat": 37.59455, "lng": 127.0993}, {"gu": "중랑구", "dong": "망우동", "name": "중랑숲금호어울림", "year": "06", "units": 686, "pyeong": 23, "star": false, "lat": 37.59455, "lng": 127.1007}, {"gu": "중랑구", "dong": "면목동", "name": "경남아너스빌", "year": "06", "units": 386, "pyeong": 24, "star": false, "lat": 37.5709, "lng": 127.0876}, {"gu": "중랑구", "dong": "면목동", "name": "면목늘푸른동아", "year": "02", "units": 573, "pyeong": 25, "star": false, "lat": 37.5709, "lng": 127.089}, {"gu": "중랑구", "dong": "면목동", "name": "면목한신", "year": "87", "units": 1362, "pyeong": 30, "star": false, "lat": 37.5709, "lng": 127.0904}, {"gu": "중랑구", "dong": "면목동", "name": "면목현대", "year": "94", "units": 626, "pyeong": 28, "star": false, "lat": 37.572, "lng": 127.0876}, {"gu": "중랑구", "dong": "면목동", "name": "면목두산2,3단지", "year": "95", "units": 344, "pyeong": 34, "star": false, "lat": 37.572, "lng": 127.089}, {"gu": "중랑구", "dong": "면목동", "name": "용마금호타운", "year": "92", "units": 440, "pyeong": 30, "star": false, "lat": 37.572, "lng": 127.0904}, {"gu": "중랑구", "dong": "면목동", "name": "용마한신", "year": "90", "units": 565, "pyeong": 24, "star": false, "lat": 37.5731, "lng": 127.0876}, {"gu": "중랑구", "dong": "면목동", "name": "면목두산4,5단지", "year": "00", "units": 555, "pyeong": 25, "star": false, "lat": 37.5731, "lng": 127.089}, {"gu": "중랑구", "dong": "묵동", "name": "신내4단지", "year": "96", "units": 1070, "pyeong": 20, "star": false, "lat": 37.61845, "lng": 127.0943}, {"gu": "중랑구", "dong": "묵동", "name": "태릉브라운스톤", "year": "04", "units": 587, "pyeong": 32, "star": false, "lat": 37.61845, "lng": 127.0957}, {"gu": "중랑구", "dong": "묵동", "name": "묵동아이파크", "year": "02", "units": 601, "pyeong": 32, "star": false, "lat": 37.61955, "lng": 127.0943}, {"gu": "중랑구", "dong": "상봉동", "name": "상봉우정", "year": "02", "units": 375, "pyeong": 25, "star": false, "lat": 37.5919, "lng": 127.0876}, {"gu": "중랑구", "dong": "상봉동", "name": "상봉태영데시앙", "year": "03", "units": 582, "pyeong": 32, "star": true, "lat": 37.5919, "lng": 127.089}, {"gu": "중랑구", "dong": "상봉동", "name": "건영2차", "year": "96", "units": 1113, "pyeong": 22, "star": false, "lat": 37.5919, "lng": 127.0904}, {"gu": "중랑구", "dong": "상봉동", "name": "LG쌍용", "year": "96", "units": 858, "pyeong": 28, "star": false, "lat": 37.593, "lng": 127.0876}, {"gu": "중랑구", "dong": "상봉동", "name": "건영1차", "year": "97", "units": 408, "pyeong": 33, "star": false, "lat": 37.593, "lng": 127.089}, {"gu": "중랑구", "dong": "상봉동", "name": "동부", "year": "99", "units": 368, "pyeong": 33, "star": false, "lat": 37.593, "lng": 127.0904}, {"gu": "중랑구", "dong": "상봉동", "name": "건영캐스빌", "year": "06", "units": 467, "pyeong": 33, "star": false, "lat": 37.5941, "lng": 127.0876}, {"gu": "중랑구", "dong": "신내동", "name": "신내데시앙포레", "year": "13", "units": 1896, "pyeong": 35, "star": true, "lat": 37.61535, "lng": 127.1109}, {"gu": "중랑구", "dong": "신내동", "name": "신내우디안1단지", "year": "14", "units": 1402, "pyeong": 25, "star": false, "lat": 37.61535, "lng": 127.1123}, {"gu": "중랑구", "dong": "신내동", "name": "동성1,2차", "year": "93", "units": 1047, "pyeong": 25, "star": false, "lat": 37.61535, "lng": 127.1137}, {"gu": "중랑구", "dong": "신내동", "name": "동성4차", "year": "97", "units": 478, "pyeong": 25, "star": false, "lat": 37.61535, "lng": 127.1151}, {"gu": "중랑구", "dong": "신내동", "name": "새한", "year": "98", "units": 532, "pyeong": 23, "star": false, "lat": 37.61645, "lng": 127.1109}, {"gu": "중랑구", "dong": "신내동", "name": "신내11단지대명", "year": "96", "units": 804, "pyeong": 21, "star": false, "lat": 37.61645, "lng": 127.1123}, {"gu": "중랑구", "dong": "신내동", "name": "동성3차", "year": "97", "units": 800, "pyeong": 25, "star": false, "lat": 37.61645, "lng": 127.1137}, {"gu": "중랑구", "dong": "신내동", "name": "신내8단지두산화성", "year": "95", "units": 763, "pyeong": 28, "star": false, "lat": 37.61645, "lng": 127.1151}, {"gu": "중랑구", "dong": "신내동", "name": "성원", "year": "94", "units": 876, "pyeong": 31, "star": false, "lat": 37.61755, "lng": 127.1109}, {"gu": "중랑구", "dong": "신내동", "name": "신내9단지진흥", "year": "96", "units": 1650, "pyeong": 21, "star": false, "lat": 37.61755, "lng": 127.1123}, {"gu": "중랑구", "dong": "신내동", "name": "신내6단지시영", "year": "96", "units": 1609, "pyeong": 21, "star": false, "lat": 37.61755, "lng": 127.1137}, {"gu": "중랑구", "dong": "신내동", "name": "중앙하이츠", "year": "96", "units": 704, "pyeong": 30, "star": false, "lat": 37.61755, "lng": 127.1151}, {"gu": "중랑구", "dong": "중화동", "name": "한신", "year": "97", "units": 1544, "pyeong": 22, "star": false, "lat": 37.6, "lng": 127.09}];
+apts.forEach(function(a){
+  var s=a.star;
+  var h='<div class="al'+(s?' st':'')+'"><div class="n">'+(s?'⭐ ':'')+a.name+'</div><div class="i">\''+a.year+'년 / '+a.units+'세대</div><div class="i">'+a.pyeong+'평</div></div>';
+  var icon=L.divIcon({className:'',html:h,iconAnchor:[0,0]});
+  L.marker([a.lat,a.lng],{icon:icon}).addTo(map)
+   .bindPopup('<b>'+(s?'⭐ ':'')+a.name+'</b><br>\''+a.year+'년 | '+a.units+'세대 | '+a.pyeong+'평'+(s?'<br><span style="color:#d97706;font-weight:700">저평가 추천단지</span>':''));
+  bounds.push([a.lat,a.lng]);
+});
+var COL={subway:'#2563eb',hospital:'#dc2626',dept:'#7c3aed',mart:'#7c3aed',school:'#16a34a',commercial:'#ea580c',park:'#0891b2'};
+var EMJ={subway:'🚇',hospital:'🏥',dept:'🏬',mart:'🛒',school:'📚',commercial:'🏪',park:'🌳'};
+var ams=[{"name": "상봉역(경의중앙선)", "lat": 37.5937, "lng": 127.0875, "type": "subway"}, {"name": "중랑역(경의중앙선)", "lat": 37.5991, "lng": 127.0935, "type": "subway"}, {"name": "망우역(경의중앙선)", "lat": 37.5946, "lng": 127.1001, "type": "subway"}, {"name": "신내역(경춘선)", "lat": 37.6171, "lng": 127.1118, "type": "subway"}, {"name": "면목역(7호선)", "lat": 37.5727, "lng": 127.0889, "type": "subway"}, {"name": "중랑병원", "lat": 37.6, "lng": 127.089, "type": "hospital"}, {"name": "상봉 터미널", "lat": 37.593, "lng": 127.0875, "type": "commercial"}, {"name": "면목 상권", "lat": 37.5722, "lng": 127.0889, "type": "commercial"}, {"name": "망우 공원", "lat": 37.5975, "lng": 127.104, "type": "park"}];
+ams.forEach(function(a){
+  var c=COL[a.type]||'#666';var e=EMJ[a.type]||'📍';
+  L.circleMarker([a.lat,a.lng],{radius:7,fillColor:c,color:'#fff',weight:2,opacity:1,fillOpacity:.9}).addTo(map)
+   .bindTooltip(e+' '+a.name,{permanent:true,direction:'right',offset:[8,0]})
+   .bindPopup('<b>'+e+' '+a.name+'</b>');
+});
+if(bounds.length>0)map.fitBounds(bounds,{padding:[50,50]});
+</script></body></html>

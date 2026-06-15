@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>서울시 금천구</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'맑은 고딕','Noto Sans KR',sans-serif;background:#0f0f1a}
+#hdr{background:#1a1a2e;color:#fff;padding:9px 16px;display:flex;align-items:center;gap:12px;border-bottom:2px solid #2563eb}
+#hdr h1{font-size:16px;font-weight:700}
+#hdr .s{font-size:11px;color:#9ca3af}
+#map{height:calc(100vh - 44px)}
+.al{background:#fff;border:2px solid #1e3a6e;border-radius:4px;padding:3px 6px;font-size:10px;line-height:1.4;white-space:nowrap;box-shadow:0 1px 5px rgba(0,0,0,.4)}
+.al.st{background:#fffbeb;border-color:#d97706;border-width:2.5px}
+.al .n{font-weight:700;font-size:10.5px;color:#1e3a6e}
+.al.st .n{color:#92400e}
+.al .i{color:#666;font-size:9.5px}
+#leg{position:absolute;bottom:26px;right:10px;z-index:9999;background:rgba(255,255,255,.94);border:1px solid #d1d5db;border-radius:8px;padding:8px 11px;font-size:11px;box-shadow:0 2px 8px rgba(0,0,0,.25);min-width:130px}
+#leg h4{font-size:11.5px;margin-bottom:5px;font-weight:700;color:#111}
+#leg .r{display:flex;align-items:center;gap:5px;margin:2px 0}
+.dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+</style></head>
+<body>
+<div id="hdr"><h1>🗺 서울시 금천구</h1><span class="s">⭐ 저평가 추천단지 | 클릭 → 상세정보</span></div>
+<div id="map"></div>
+<div id="leg">
+<h4>범례</h4>
+<div class="r"><div class="dot" style="background:#2563eb"></div>지하철역</div>
+<div class="r"><div class="dot" style="background:#dc2626"></div>종합병원</div>
+<div class="r"><div class="dot" style="background:#7c3aed"></div>백화점/마트</div>
+<div class="r"><div class="dot" style="background:#16a34a"></div>학교/학원가</div>
+<div class="r"><div class="dot" style="background:#ea580c"></div>상권</div>
+<div class="r"><div class="dot" style="background:#0891b2"></div>공원</div>
+<div class="r"><span style="font-size:12px">⭐</span> 저평가 추천</div>
+</div>
+<script>
+var map=L.map('map');
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
+var bounds=[];
+var apts=[{"gu": "금천구", "dong": "가산동", "name": "두산위브", "year": "98", "units": 1495, "pyeong": 24, "star": false, "lat": 37.476, "lng": 126.884}, {"gu": "금천구", "dong": "독산동", "name": "독산중앙하이츠빌", "year": "04", "units": 554, "pyeong": 34, "star": true, "lat": 37.46025, "lng": 126.8953}, {"gu": "금천구", "dong": "독산동", "name": "금천현대", "year": "02", "units": 996, "pyeong": 24, "star": false, "lat": 37.46025, "lng": 126.8967}, {"gu": "금천구", "dong": "시흥동", "name": "남서울힐스테이트", "year": "14", "units": 1764, "pyeong": 24, "star": true, "lat": 37.449, "lng": 126.89}];
+apts.forEach(function(a){
+  var s=a.star;
+  var h='<div class="al'+(s?' st':'')+'"><div class="n">'+(s?'⭐ ':'')+a.name+'</div><div class="i">\''+a.year+'년 / '+a.units+'세대</div><div class="i">'+a.pyeong+'평</div></div>';
+  var icon=L.divIcon({className:'',html:h,iconAnchor:[0,0]});
+  L.marker([a.lat,a.lng],{icon:icon}).addTo(map)
+   .bindPopup('<b>'+(s?'⭐ ':'')+a.name+'</b><br>\''+a.year+'년 | '+a.units+'세대 | '+a.pyeong+'평'+(s?'<br><span style="color:#d97706;font-weight:700">저평가 추천단지</span>':''));
+  bounds.push([a.lat,a.lng]);
+});
+var COL={subway:'#2563eb',hospital:'#dc2626',dept:'#7c3aed',mart:'#7c3aed',school:'#16a34a',commercial:'#ea580c',park:'#0891b2'};
+var EMJ={subway:'🚇',hospital:'🏥',dept:'🏬',mart:'🛒',school:'📚',commercial:'🏪',park:'🌳'};
+var ams=[{"name": "독산역(1호선)", "lat": 37.461, "lng": 126.8956, "type": "subway"}, {"name": "시흥역(1호선)", "lat": 37.449, "lng": 126.89, "type": "subway"}, {"name": "가산디지털단지역(7호선/1호선)", "lat": 37.476, "lng": 126.8837, "type": "subway"}, {"name": "이마트 금천점", "lat": 37.4506, "lng": 126.9009, "type": "mart"}, {"name": "금천구의료원", "lat": 37.458, "lng": 126.89, "type": "hospital"}, {"name": "가산디지털단지", "lat": 37.476, "lng": 126.8837, "type": "commercial"}, {"name": "안양천", "lat": 37.455, "lng": 126.895, "type": "park"}];
+ams.forEach(function(a){
+  var c=COL[a.type]||'#666';var e=EMJ[a.type]||'📍';
+  L.circleMarker([a.lat,a.lng],{radius:7,fillColor:c,color:'#fff',weight:2,opacity:1,fillOpacity:.9}).addTo(map)
+   .bindTooltip(e+' '+a.name,{permanent:true,direction:'right',offset:[8,0]})
+   .bindPopup('<b>'+e+' '+a.name+'</b>');
+});
+if(bounds.length>0)map.fitBounds(bounds,{padding:[50,50]});
+</script></body></html>
