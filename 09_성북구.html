@@ -12,19 +12,70 @@ body{font-family:'맑은 고딕','Noto Sans KR',sans-serif;background:#0f0f1a}
 #hdr h1{font-size:16px;font-weight:700}
 #hdr .s{font-size:11px;color:#9ca3af}
 #map{height:calc(100vh - 44px)}
-.al{background:#fff;border:2px solid #1e3a6e;border-radius:4px;padding:3px 6px;font-size:10px;line-height:1.4;white-space:nowrap;box-shadow:0 1px 5px rgba(0,0,0,.4)}
+.al{background:rgba(255,255,255,.98);border:2.5px solid #0f2f66;border-radius:5px;padding:5px 8px;font-size:12px;line-height:1.45;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.5)}
 .al.st{background:#fffbeb;border-color:#d97706;border-width:2.5px}
-.al .n{font-weight:700;font-size:10.5px;color:#1e3a6e}
+.al .n{font-weight:800;font-size:12.5px;color:#0f2f66;letter-spacing:-.2px}
 .al.st .n{color:#92400e}
-.al .i{color:#666;font-size:9.5px}
+.al .i{color:#3f3f46;font-size:11px;font-weight:700}
 #leg{position:absolute;bottom:26px;right:10px;z-index:9999;background:rgba(255,255,255,.94);border:1px solid #d1d5db;border-radius:8px;padding:8px 11px;font-size:11px;box-shadow:0 2px 8px rgba(0,0,0,.25);min-width:130px}
 #leg h4{font-size:11.5px;margin-bottom:5px;font-weight:700;color:#111}
 #leg .r{display:flex;align-items:center;gap:5px;margin:2px 0}
 .dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+
+.station-pin{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  background:#0b5bd3;
+  color:#fff;
+  border:2px solid #fff;
+  border-radius:999px;
+  padding:4px 8px;
+  font-size:12px;
+  font-weight:800;
+  white-space:nowrap;
+  box-shadow:0 2px 8px rgba(0,0,0,.45);
+}
+.station-pin .station-dot{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  background:#fff;
+  color:#0b5bd3;
+  font-size:12px;
+}
+
+
+.leaflet-tile-pane{
+  filter:saturate(1.08) contrast(1.04);
+}
+.leaflet-tooltip{
+  font-family:"Malgun Gothic","Noto Sans KR",sans-serif;
+  font-weight:800;
+}
+#zoomHint{
+  position:absolute;
+  top:58px;
+  left:10px;
+  z-index:9999;
+  background:rgba(255,255,255,.96);
+  border:1px solid #cbd5e1;
+  border-radius:8px;
+  padding:8px 11px;
+  font-size:12px;
+  font-weight:800;
+  color:#0f172a;
+  box-shadow:0 2px 8px rgba(0,0,0,.22);
+}
+
 </style></head>
 <body>
 <div id="hdr"><h1>🗺 서울시 성북구</h1><span class="s">⭐ 저평가 추천단지 | 클릭 → 상세정보</span></div>
 <div id="map"></div>
+<div id="zoomHint">+ 버튼으로 더 확대하면 주변 단지명이 더 잘 보입니다</div>
 <div id="leg">
 <h4>범례</h4>
 <div class="r"><div class="dot" style="background:#2563eb"></div>지하철역</div>
@@ -36,8 +87,8 @@ body{font-family:'맑은 고딕','Noto Sans KR',sans-serif;background:#0f0f1a}
 <div class="r"><span style="font-size:12px">⭐</span> 저평가 추천</div>
 </div>
 <script>
-var map=L.map('map');
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
+var map=L.map('map',{maxZoom:22,zoomSnap:.25});
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxNativeZoom:19,maxZoom:22}).addTo(map);
 var bounds=[];
 var apts=[{"gu": "성북구", "dong": "길음", "name": "길음뉴타운2단지푸르지오", "year": "05", "units": 1634, "pyeong": 23, "star": false, "lat": 37.61245, "lng": 127.0123}, {"gu": "성북구", "dong": "길음", "name": "길음뉴타운3단지푸르지오", "year": "05", "units": 434, "pyeong": 23, "star": false, "lat": 37.61245, "lng": 127.0137}, {"gu": "성북구", "dong": "길음", "name": "돈암삼부(삼부컨비니언)", "year": "98", "units": 684, "pyeong": 29, "star": false, "lat": 37.61355, "lng": 127.0123}, {"gu": "성북구", "dong": "돈암", "name": "돈암삼성", "year": "99", "units": 1278, "pyeong": 31, "star": false, "lat": 37.5919, "lng": 127.0116}, {"gu": "성북구", "dong": "돈암", "name": "돈암풍림", "year": "99", "units": 460, "pyeong": 32, "star": false, "lat": 37.5919, "lng": 127.013}, {"gu": "성북구", "dong": "돈암", "name": "돈암현대", "year": "91", "units": 619, "pyeong": 29, "star": false, "lat": 37.5919, "lng": 127.0144}, {"gu": "성북구", "dong": "돈암", "name": "돈암더샵", "year": "06", "units": 339, "pyeong": 32, "star": false, "lat": 37.593, "lng": 127.0116}, {"gu": "성북구", "dong": "돈암", "name": "일신건영휴먼빌", "year": "05", "units": 689, "pyeong": 32, "star": false, "lat": 37.593, "lng": 127.013}, {"gu": "성북구", "dong": "돈암", "name": "한신,한진", "year": "98", "units": 4509, "pyeong": 24, "star": false, "lat": 37.593, "lng": 127.0144}, {"gu": "성북구", "dong": "동소문동4가", "name": "송산", "year": "98", "units": 345, "pyeong": 23, "star": false, "lat": 37.591, "lng": 127.006}, {"gu": "성북구", "dong": "삼선동2가", "name": "삼선푸르지오", "year": "08", "units": 864, "pyeong": 22, "star": false, "lat": 37.58045, "lng": 127.0073}, {"gu": "성북구", "dong": "삼선동2가", "name": "삼선현대힐스테이트", "year": "09", "units": 377, "pyeong": 22, "star": false, "lat": 37.58045, "lng": 127.0087}, {"gu": "성북구", "dong": "상월곡", "name": "동아에코빌", "year": "03", "units": 1253, "pyeong": 26, "star": false, "lat": 37.606, "lng": 127.032}, {"gu": "성북구", "dong": "석관", "name": "중앙하이츠", "year": "94", "units": 315, "pyeong": 23, "star": false, "lat": 37.60645, "lng": 127.0433}, {"gu": "성북구", "dong": "석관", "name": "래미안석관", "year": "09", "units": 580, "pyeong": 24, "star": true, "lat": 37.60645, "lng": 127.0447}, {"gu": "성북구", "dong": "장위", "name": "참누리", "year": "06", "units": 373, "pyeong": 32, "star": false, "lat": 37.617, "lng": 127.04}, {"gu": "성북구", "dong": "정릉", "name": "정릉풍림아이원", "year": "05", "units": 1971, "pyeong": 24, "star": false, "lat": 37.61935, "lng": 127.0029}, {"gu": "성북구", "dong": "정릉", "name": "길음뉴타운경남아너스빌", "year": "99", "units": 860, "pyeong": 24, "star": false, "lat": 37.61935, "lng": 127.0043}, {"gu": "성북구", "dong": "정릉", "name": "길음뉴타운데시앙", "year": "99", "units": 514, "pyeong": 24, "star": false, "lat": 37.61935, "lng": 127.0057}, {"gu": "성북구", "dong": "정릉", "name": "정릉대우", "year": "01", "units": 791, "pyeong": 24, "star": false, "lat": 37.61935, "lng": 127.0071}, {"gu": "성북구", "dong": "정릉", "name": "정릉중앙하이츠빌1단지", "year": "04", "units": 433, "pyeong": 32, "star": false, "lat": 37.62045, "lng": 127.0029}, {"gu": "성북구", "dong": "정릉", "name": "중앙하이츠빌2단지", "year": "05", "units": 745, "pyeong": 24, "star": false, "lat": 37.62045, "lng": 127.0043}, {"gu": "성북구", "dong": "정릉", "name": "푸른마을동아", "year": "03", "units": 529, "pyeong": 24, "star": false, "lat": 37.62045, "lng": 127.0057}, {"gu": "성북구", "dong": "정릉", "name": "정릉꿈에그린", "year": "15", "units": 349, "pyeong": 34, "star": true, "lat": 37.62045, "lng": 127.0071}, {"gu": "성북구", "dong": "정릉", "name": "정릉우성", "year": "00", "units": 823, "pyeong": 31, "star": false, "lat": 37.62155, "lng": 127.0029}, {"gu": "성북구", "dong": "정릉", "name": "정릉e-편한세상1차", "year": "06", "units": 739, "pyeong": 32, "star": false, "lat": 37.62155, "lng": 127.0043}, {"gu": "성북구", "dong": "종암", "name": "종암SK", "year": "99", "units": 1318, "pyeong": 24, "star": false, "lat": 37.605, "lng": 127.037}, {"gu": "성북구", "dong": "하월곡", "name": "꿈의숲푸르지오", "year": "10", "units": 714, "pyeong": 24, "star": true, "lat": 37.60565, "lng": 127.0318}, {"gu": "성북구", "dong": "하월곡", "name": "동신", "year": "98", "units": 746, "pyeong": 32, "star": false, "lat": 37.60565, "lng": 127.0332}, {"gu": "성북구", "dong": "하월곡", "name": "월곡두산위브", "year": "03", "units": 2197, "pyeong": 24, "star": false, "lat": 37.60675, "lng": 127.0318}, {"gu": "성북구", "dong": "하월곡", "name": "샹그레빌", "year": "04", "units": 352, "pyeong": 32, "star": false, "lat": 37.60675, "lng": 127.0332}];
 apts.forEach(function(a){
@@ -52,7 +103,15 @@ var COL={subway:'#2563eb',hospital:'#dc2626',dept:'#7c3aed',mart:'#7c3aed',schoo
 var EMJ={subway:'🚇',hospital:'🏥',dept:'🏬',mart:'🛒',school:'📚',commercial:'🏪',park:'🌳'};
 var ams=[{"name": "길음역(4호선)", "lat": 37.6032, "lng": 127.0246, "type": "subway"}, {"name": "미아삼거리역(4호선)", "lat": 37.6143, "lng": 127.0298, "type": "subway"}, {"name": "성신여대입구역(4호선)", "lat": 37.5926, "lng": 127.0168, "type": "subway"}, {"name": "한성대입구역(4호선)", "lat": 37.5887, "lng": 127.0083, "type": "subway"}, {"name": "고려대학교", "lat": 37.5897, "lng": 127.0324, "type": "school"}, {"name": "고려대병원", "lat": 37.5899, "lng": 127.0328, "type": "hospital"}, {"name": "북서울꿈의숲", "lat": 37.6147, "lng": 127.0381, "type": "park"}, {"name": "길음 상권", "lat": 37.6032, "lng": 127.0248, "type": "commercial"}, {"name": "돈암 상권", "lat": 37.593, "lng": 127.013, "type": "commercial"}];
 ams.forEach(function(a){
-  var c=COL[a.type]||'#666';var e=EMJ[a.type]||'📍';
+  var c=COL[a.type]||'#666';var e=EMJ[a.type]||'•';
+  if(a.type==='subway'){
+    var h='<div class="station-pin"><span class="station-dot">🚇</span><span>'+a.name+'</span></div>';
+    L.marker([a.lat,a.lng],{
+      icon:L.divIcon({className:'',html:h,iconAnchor:[8,18]}),
+      zIndexOffset:900
+    }).addTo(map).bindPopup('<b>🚇 '+a.name+'</b>');
+    return;
+  }
   L.circleMarker([a.lat,a.lng],{radius:7,fillColor:c,color:'#fff',weight:2,opacity:1,fillOpacity:.9}).addTo(map)
    .bindTooltip(e+' '+a.name,{permanent:true,direction:'right',offset:[8,0]})
    .bindPopup('<b>'+e+' '+a.name+'</b>');

@@ -12,19 +12,70 @@ body{font-family:'맑은 고딕','Noto Sans KR',sans-serif;background:#0f0f1a}
 #hdr h1{font-size:16px;font-weight:700}
 #hdr .s{font-size:11px;color:#9ca3af}
 #map{height:calc(100vh - 44px)}
-.al{background:#fff;border:2px solid #1e3a6e;border-radius:4px;padding:3px 6px;font-size:10px;line-height:1.4;white-space:nowrap;box-shadow:0 1px 5px rgba(0,0,0,.4)}
+.al{background:rgba(255,255,255,.98);border:2.5px solid #0f2f66;border-radius:5px;padding:5px 8px;font-size:12px;line-height:1.45;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.5)}
 .al.st{background:#fffbeb;border-color:#d97706;border-width:2.5px}
-.al .n{font-weight:700;font-size:10.5px;color:#1e3a6e}
+.al .n{font-weight:800;font-size:12.5px;color:#0f2f66;letter-spacing:-.2px}
 .al.st .n{color:#92400e}
-.al .i{color:#666;font-size:9.5px}
+.al .i{color:#3f3f46;font-size:11px;font-weight:700}
 #leg{position:absolute;bottom:26px;right:10px;z-index:9999;background:rgba(255,255,255,.94);border:1px solid #d1d5db;border-radius:8px;padding:8px 11px;font-size:11px;box-shadow:0 2px 8px rgba(0,0,0,.25);min-width:130px}
 #leg h4{font-size:11.5px;margin-bottom:5px;font-weight:700;color:#111}
 #leg .r{display:flex;align-items:center;gap:5px;margin:2px 0}
 .dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+
+.station-pin{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  background:#0b5bd3;
+  color:#fff;
+  border:2px solid #fff;
+  border-radius:999px;
+  padding:4px 8px;
+  font-size:12px;
+  font-weight:800;
+  white-space:nowrap;
+  box-shadow:0 2px 8px rgba(0,0,0,.45);
+}
+.station-pin .station-dot{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  background:#fff;
+  color:#0b5bd3;
+  font-size:12px;
+}
+
+
+.leaflet-tile-pane{
+  filter:saturate(1.08) contrast(1.04);
+}
+.leaflet-tooltip{
+  font-family:"Malgun Gothic","Noto Sans KR",sans-serif;
+  font-weight:800;
+}
+#zoomHint{
+  position:absolute;
+  top:58px;
+  left:10px;
+  z-index:9999;
+  background:rgba(255,255,255,.96);
+  border:1px solid #cbd5e1;
+  border-radius:8px;
+  padding:8px 11px;
+  font-size:12px;
+  font-weight:800;
+  color:#0f172a;
+  box-shadow:0 2px 8px rgba(0,0,0,.22);
+}
+
 </style></head>
 <body>
 <div id="hdr"><h1>🗺 서울시 구로구</h1><span class="s">⭐ 저평가 추천단지 | 클릭 → 상세정보</span></div>
 <div id="map"></div>
+<div id="zoomHint">+ 버튼으로 더 확대하면 주변 단지명이 더 잘 보입니다</div>
 <div id="leg">
 <h4>범례</h4>
 <div class="r"><div class="dot" style="background:#2563eb"></div>지하철역</div>
@@ -36,8 +87,8 @@ body{font-family:'맑은 고딕','Noto Sans KR',sans-serif;background:#0f0f1a}
 <div class="r"><span style="font-size:12px">⭐</span> 저평가 추천</div>
 </div>
 <script>
-var map=L.map('map');
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
+var map=L.map('map',{maxZoom:22,zoomSnap:.25});
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxNativeZoom:19,maxZoom:22}).addTo(map);
 var bounds=[];
 var apts=[{"gu": "구로구", "dong": "개봉동", "name": "개봉푸르지오", "year": "14", "units": 978, "pyeong": 31, "star": false, "lat": 37.4896, "lng": 126.8516}, {"gu": "구로구", "dong": "개봉동", "name": "개봉한진타운", "year": "00", "units": 1371, "pyeong": 26, "star": false, "lat": 37.4896, "lng": 126.853}, {"gu": "구로구", "dong": "개봉동", "name": "두산", "year": "97", "units": 561, "pyeong": 25, "star": false, "lat": 37.4896, "lng": 126.8544}, {"gu": "구로구", "dong": "개봉동", "name": "삼호", "year": "96", "units": 369, "pyeong": 26, "star": false, "lat": 37.4907, "lng": 126.8516}, {"gu": "구로구", "dong": "개봉동", "name": "삼환", "year": "95", "units": 783, "pyeong": 26, "star": false, "lat": 37.4907, "lng": 126.853}, {"gu": "구로구", "dong": "개봉동", "name": "영화", "year": "98", "units": 372, "pyeong": 26, "star": false, "lat": 37.4907, "lng": 126.8544}, {"gu": "구로구", "dong": "개봉동", "name": "현대", "year": "01", "units": 2412, "pyeong": 26, "star": false, "lat": 37.4918, "lng": 126.8516}, {"gu": "구로구", "dong": "개봉동", "name": "현대홈타운2단지", "year": "01", "units": 964, "pyeong": 26, "star": false, "lat": 37.4918, "lng": 126.853}, {"gu": "구로구", "dong": "고척동", "name": "동아한신", "year": "00", "units": 355, "pyeong": 25, "star": false, "lat": 37.5017, "lng": 126.8549}, {"gu": "구로구", "dong": "고척동", "name": "벽산베스트블루밍", "year": "10", "units": 339, "pyeong": 24, "star": false, "lat": 37.5017, "lng": 126.8563}, {"gu": "구로구", "dong": "고척동", "name": "우성현대", "year": "87", "units": 440, "pyeong": 28, "star": false, "lat": 37.5017, "lng": 126.8577}, {"gu": "구로구", "dong": "고척동", "name": "청구", "year": "99", "units": 448, "pyeong": 32, "star": false, "lat": 37.5028, "lng": 126.8549}, {"gu": "구로구", "dong": "고척동", "name": "한일유앤아이", "year": "05", "units": 390, "pyeong": 33, "star": false, "lat": 37.5028, "lng": 126.8563}, {"gu": "구로구", "dong": "구로동", "name": "구로두산", "year": "98", "units": 1285, "pyeong": 33, "star": false, "lat": 37.4959, "lng": 126.8856}, {"gu": "구로구", "dong": "구로동", "name": "구로중앙하이츠", "year": "01", "units": 597, "pyeong": 26, "star": false, "lat": 37.4959, "lng": 126.887}, {"gu": "구로구", "dong": "구로동", "name": "구로현대", "year": "92", "units": 591, "pyeong": 26, "star": false, "lat": 37.4959, "lng": 126.8884}, {"gu": "구로구", "dong": "구로동", "name": "구일우성", "year": "98", "units": 829, "pyeong": 32, "star": false, "lat": 37.497, "lng": 126.8856}, {"gu": "구로구", "dong": "구로동", "name": "럭키", "year": "92", "units": 427, "pyeong": 34, "star": false, "lat": 37.497, "lng": 126.887}, {"gu": "구로구", "dong": "구로동", "name": "중앙구로하이츠", "year": "87", "units": 579, "pyeong": 28, "star": false, "lat": 37.497, "lng": 126.8884}, {"gu": "구로구", "dong": "구로동", "name": "한신휴플러스", "year": "07", "units": 498, "pyeong": 24, "star": false, "lat": 37.4981, "lng": 126.8856}, {"gu": "구로구", "dong": "구로동", "name": "한일유앤아이", "year": "06", "units": 454, "pyeong": 32, "star": false, "lat": 37.4981, "lng": 126.887}, {"gu": "구로구", "dong": "구로동", "name": "현대연예인", "year": "89", "units": 735, "pyeong": 28, "star": false, "lat": 37.4981, "lng": 126.8884}, {"gu": "구로구", "dong": "오류동", "name": "금강수목원", "year": "03", "units": 620, "pyeong": 25, "star": false, "lat": 37.49145, "lng": 126.8293}, {"gu": "구로구", "dong": "오류동", "name": "삼천리", "year": "98", "units": 423, "pyeong": 31, "star": false, "lat": 37.49145, "lng": 126.8307}, {"gu": "구로구", "dong": "오류동", "name": "영풍마드레빌", "year": "02", "units": 627, "pyeong": 34, "star": false, "lat": 37.49255, "lng": 126.8293}, {"gu": "구로구", "dong": "오류동", "name": "오류푸르지오", "year": "04", "units": 378, "pyeong": 32, "star": false, "lat": 37.49255, "lng": 126.8307}, {"gu": "구로구", "dong": "온수동", "name": "온수힐스테이트", "year": "10", "units": 999, "pyeong": 34, "star": true, "lat": 37.492, "lng": 126.821}, {"gu": "구로구", "dong": "천왕동", "name": "천왕연지타운1단지", "year": "13", "units": 571, "pyeong": 36, "star": false, "lat": 37.4789, "lng": 126.8376}, {"gu": "구로구", "dong": "천왕동", "name": "천왕이펜하우스1단지", "year": "11", "units": 314, "pyeong": 26, "star": false, "lat": 37.4789, "lng": 126.839}, {"gu": "구로구", "dong": "천왕동", "name": "천왕이펜하우스3단지", "year": "11", "units": 1044, "pyeong": 35, "star": true, "lat": 37.4789, "lng": 126.8404}, {"gu": "구로구", "dong": "천왕동", "name": "천왕이펜하우스4단지", "year": "11", "units": 478, "pyeong": 34, "star": false, "lat": 37.48, "lng": 126.8376}, {"gu": "구로구", "dong": "천왕동", "name": "천왕이펜하우스6단지", "year": "11", "units": 678, "pyeong": 34, "star": false, "lat": 37.48, "lng": 126.839}, {"gu": "구로구", "dong": "항동", "name": "우남퍼스트빌더센트럴", "year": "20", "units": 337, "pyeong": 31, "star": false, "lat": 37.4779, "lng": 126.8216}, {"gu": "구로구", "dong": "항동", "name": "하버라인2단지", "year": "19", "units": 646, "pyeong": 25, "star": false, "lat": 37.4779, "lng": 126.823}, {"gu": "구로구", "dong": "항동", "name": "하버라인3단지", "year": "19", "units": 1170, "pyeong": 26, "star": false, "lat": 37.4779, "lng": 126.8244}, {"gu": "구로구", "dong": "항동", "name": "한양수자인에듀힐즈", "year": "19", "units": 634, "pyeong": 30, "star": true, "lat": 37.479, "lng": 126.8216}, {"gu": "구로구", "dong": "항동", "name": "항동제일풍경채포레스트", "year": "20", "units": 345, "pyeong": 33, "star": false, "lat": 37.479, "lng": 126.823}, {"gu": "구로구", "dong": "항동", "name": "항동중흥S-클래스베르데카운티", "year": "19", "units": 419, "pyeong": 34, "star": false, "lat": 37.479, "lng": 126.8244}];
 apts.forEach(function(a){
@@ -52,7 +103,15 @@ var COL={subway:'#2563eb',hospital:'#dc2626',dept:'#7c3aed',mart:'#7c3aed',schoo
 var EMJ={subway:'🚇',hospital:'🏥',dept:'🏬',mart:'🛒',school:'📚',commercial:'🏪',park:'🌳'};
 var ams=[{"name": "구일역(1호선)", "lat": 37.4975, "lng": 126.8822, "type": "subway"}, {"name": "개봉역(1호선)", "lat": 37.4908, "lng": 126.8601, "type": "subway"}, {"name": "오류동역(1호선)", "lat": 37.4924, "lng": 126.8319, "type": "subway"}, {"name": "온수역(1호선/7호선)", "lat": 37.4924, "lng": 126.8236, "type": "subway"}, {"name": "천왕역(7호선)", "lat": 37.479, "lng": 126.8432, "type": "subway"}, {"name": "고척스카이돔", "lat": 37.4998, "lng": 126.8671, "type": "park"}, {"name": "구로성심병원", "lat": 37.497, "lng": 126.8877, "type": "hospital"}, {"name": "항동 신도시", "lat": 37.4783, "lng": 126.8236, "type": "commercial"}];
 ams.forEach(function(a){
-  var c=COL[a.type]||'#666';var e=EMJ[a.type]||'📍';
+  var c=COL[a.type]||'#666';var e=EMJ[a.type]||'•';
+  if(a.type==='subway'){
+    var h='<div class="station-pin"><span class="station-dot">🚇</span><span>'+a.name+'</span></div>';
+    L.marker([a.lat,a.lng],{
+      icon:L.divIcon({className:'',html:h,iconAnchor:[8,18]}),
+      zIndexOffset:900
+    }).addTo(map).bindPopup('<b>🚇 '+a.name+'</b>');
+    return;
+  }
   L.circleMarker([a.lat,a.lng],{radius:7,fillColor:c,color:'#fff',weight:2,opacity:1,fillOpacity:.9}).addTo(map)
    .bindTooltip(e+' '+a.name,{permanent:true,direction:'right',offset:[8,0]})
    .bindPopup('<b>'+e+' '+a.name+'</b>');

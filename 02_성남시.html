@@ -12,19 +12,70 @@ body{font-family:'맑은 고딕','Noto Sans KR',sans-serif;background:#0f0f1a}
 #hdr h1{font-size:16px;font-weight:700}
 #hdr .s{font-size:11px;color:#9ca3af}
 #map{height:calc(100vh - 44px)}
-.al{background:#fff;border:2px solid #1e3a6e;border-radius:4px;padding:3px 6px;font-size:10px;line-height:1.4;white-space:nowrap;box-shadow:0 1px 5px rgba(0,0,0,.4)}
+.al{background:rgba(255,255,255,.98);border:2.5px solid #0f2f66;border-radius:5px;padding:5px 8px;font-size:12px;line-height:1.45;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.5)}
 .al.st{background:#fffbeb;border-color:#d97706;border-width:2.5px}
-.al .n{font-weight:700;font-size:10.5px;color:#1e3a6e}
+.al .n{font-weight:800;font-size:12.5px;color:#0f2f66;letter-spacing:-.2px}
 .al.st .n{color:#92400e}
-.al .i{color:#666;font-size:9.5px}
+.al .i{color:#3f3f46;font-size:11px;font-weight:700}
 #leg{position:absolute;bottom:26px;right:10px;z-index:9999;background:rgba(255,255,255,.94);border:1px solid #d1d5db;border-radius:8px;padding:8px 11px;font-size:11px;box-shadow:0 2px 8px rgba(0,0,0,.25);min-width:130px}
 #leg h4{font-size:11.5px;margin-bottom:5px;font-weight:700;color:#111}
 #leg .r{display:flex;align-items:center;gap:5px;margin:2px 0}
 .dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+
+.station-pin{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  background:#0b5bd3;
+  color:#fff;
+  border:2px solid #fff;
+  border-radius:999px;
+  padding:4px 8px;
+  font-size:12px;
+  font-weight:800;
+  white-space:nowrap;
+  box-shadow:0 2px 8px rgba(0,0,0,.45);
+}
+.station-pin .station-dot{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  background:#fff;
+  color:#0b5bd3;
+  font-size:12px;
+}
+
+
+.leaflet-tile-pane{
+  filter:saturate(1.08) contrast(1.04);
+}
+.leaflet-tooltip{
+  font-family:"Malgun Gothic","Noto Sans KR",sans-serif;
+  font-weight:800;
+}
+#zoomHint{
+  position:absolute;
+  top:58px;
+  left:10px;
+  z-index:9999;
+  background:rgba(255,255,255,.96);
+  border:1px solid #cbd5e1;
+  border-radius:8px;
+  padding:8px 11px;
+  font-size:12px;
+  font-weight:800;
+  color:#0f172a;
+  box-shadow:0 2px 8px rgba(0,0,0,.22);
+}
+
 </style></head>
 <body>
 <div id="hdr"><h1>🗺 성남시 분당/수정/중원구</h1><span class="s">⭐ 저평가 추천단지 | 클릭 → 상세정보</span></div>
 <div id="map"></div>
+<div id="zoomHint">+ 버튼으로 더 확대하면 주변 단지명이 더 잘 보입니다</div>
 <div id="leg">
 <h4>범례</h4>
 <div class="r"><div class="dot" style="background:#2563eb"></div>지하철역</div>
@@ -36,8 +87,8 @@ body{font-family:'맑은 고딕','Noto Sans KR',sans-serif;background:#0f0f1a}
 <div class="r"><span style="font-size:12px">⭐</span> 저평가 추천</div>
 </div>
 <script>
-var map=L.map('map');
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
+var map=L.map('map',{maxZoom:22,zoomSnap:.25});
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxNativeZoom:19,maxZoom:22}).addTo(map);
 var bounds=[];
 var apts=[{"gu": "분당구", "dong": "금곡동", "name": "더헤리티지", "year": "09", "units": 390, "pyeong": 38, "star": false, "lat": 37.353, "lng": 127.118}, {"gu": "수정구", "dong": "단대동", "name": "진로", "year": "98", "units": 499, "pyeong": 32, "star": false, "lat": 37.448, "lng": 127.145}, {"gu": "수정구", "dong": "수진동", "name": "삼부", "year": "96", "units": 834, "pyeong": 33, "star": false, "lat": 37.451, "lng": 127.148}, {"gu": "수정구", "dong": "신흥동", "name": "두산", "year": "93", "units": 570, "pyeong": 29, "star": false, "lat": 37.44845, "lng": 127.1473}, {"gu": "수정구", "dong": "신흥동", "name": "청구", "year": "94", "units": 493, "pyeong": 29, "star": false, "lat": 37.44845, "lng": 127.1487}, {"gu": "수정구", "dong": "신흥동", "name": "한신", "year": "90", "units": 585, "pyeong": 31, "star": false, "lat": 37.44955, "lng": 127.1473}, {"gu": "수정구", "dong": "태평동", "name": "가천대역두산위브", "year": "18", "units": 503, "pyeong": 35, "star": true, "lat": 37.448, "lng": 127.133}, {"gu": "중원구", "dong": "금광동", "name": "래미안금광", "year": "06", "units": 1098, "pyeong": 31, "star": true, "lat": 37.42645, "lng": 127.1503}, {"gu": "중원구", "dong": "금광동", "name": "한양수자인성남마크뷰", "year": "21", "units": 711, "pyeong": 24, "star": true, "lat": 37.42645, "lng": 127.1517}, {"gu": "중원구", "dong": "금광동", "name": "황송마을", "year": "93", "units": 990, "pyeong": 20, "star": false, "lat": 37.42755, "lng": 127.1503}, {"gu": "중원구", "dong": "도촌동", "name": "동분당더퍼스트", "year": "10", "units": 633, "pyeong": 32, "star": false, "lat": 37.43045, "lng": 127.1503}, {"gu": "중원구", "dong": "도촌동", "name": "동분당포레스트", "year": "07", "units": 408, "pyeong": 32, "star": false, "lat": 37.43045, "lng": 127.1517}, {"gu": "중원구", "dong": "상대원동", "name": "산성", "year": "97", "units": 360, "pyeong": 30, "star": false, "lat": 37.424, "lng": 127.16}, {"gu": "중원구", "dong": "성남동", "name": "성남어울림", "year": "06", "units": 507, "pyeong": 24, "star": false, "lat": 37.43745, "lng": 127.1463}, {"gu": "중원구", "dong": "성남동", "name": "성남현대", "year": "92", "units": 375, "pyeong": 30, "star": false, "lat": 37.43745, "lng": 127.1477}, {"gu": "중원구", "dong": "여수동", "name": "산들마을", "year": "15", "units": 1171, "pyeong": 21, "star": false, "lat": 37.432, "lng": 127.128}, {"gu": "중원구", "dong": "은행동", "name": "두산위브", "year": "03", "units": 432, "pyeong": 24, "star": false, "lat": 37.44445, "lng": 127.1443}, {"gu": "중원구", "dong": "은행동", "name": "은행주공1", "year": "87", "units": 1900, "pyeong": 27, "star": false, "lat": 37.44445, "lng": 127.1457}, {"gu": "중원구", "dong": "은행동", "name": "은행현대", "year": "95", "units": 1258, "pyeong": 30, "star": false, "lat": 37.44555, "lng": 127.1443}, {"gu": "중원구", "dong": "하대원동", "name": "성남자이", "year": "07", "units": 910, "pyeong": 32, "star": false, "lat": 37.42645, "lng": 127.1503}, {"gu": "중원구", "dong": "하대원동", "name": "아튼빌", "year": "03", "units": 1541, "pyeong": 26, "star": false, "lat": 37.42645, "lng": 127.1517}, {"gu": "중원구", "dong": "하대원동", "name": "하대원현대", "year": "95", "units": 314, "pyeong": 32, "star": false, "lat": 37.42755, "lng": 127.1503}];
 apts.forEach(function(a){
@@ -52,7 +103,15 @@ var COL={subway:'#2563eb',hospital:'#dc2626',dept:'#7c3aed',mart:'#7c3aed',schoo
 var EMJ={subway:'🚇',hospital:'🏥',dept:'🏬',mart:'🛒',school:'📚',commercial:'🏪',park:'🌳'};
 var ams=[{"name": "모란역(8호선/수인분당선)", "lat": 37.4337, "lng": 127.1294, "type": "subway"}, {"name": "단대오거리역(8호선)", "lat": 37.4523, "lng": 127.1467, "type": "subway"}, {"name": "신흥역(8호선)", "lat": 37.4515, "lng": 127.1528, "type": "subway"}, {"name": "가천대역(수인분당선)", "lat": 37.4485, "lng": 127.1279, "type": "subway"}, {"name": "성남시의료원", "lat": 37.4372, "lng": 127.14, "type": "hospital"}, {"name": "분당서울대병원", "lat": 37.3594, "lng": 127.1022, "type": "hospital"}, {"name": "야탑NC백화점", "lat": 37.4124, "lng": 127.1286, "type": "dept"}, {"name": "모란 상권", "lat": 37.434, "lng": 127.1295, "type": "commercial"}, {"name": "성남 학원가", "lat": 37.449, "lng": 127.146, "type": "school"}];
 ams.forEach(function(a){
-  var c=COL[a.type]||'#666';var e=EMJ[a.type]||'📍';
+  var c=COL[a.type]||'#666';var e=EMJ[a.type]||'•';
+  if(a.type==='subway'){
+    var h='<div class="station-pin"><span class="station-dot">🚇</span><span>'+a.name+'</span></div>';
+    L.marker([a.lat,a.lng],{
+      icon:L.divIcon({className:'',html:h,iconAnchor:[8,18]}),
+      zIndexOffset:900
+    }).addTo(map).bindPopup('<b>🚇 '+a.name+'</b>');
+    return;
+  }
   L.circleMarker([a.lat,a.lng],{radius:7,fillColor:c,color:'#fff',weight:2,opacity:1,fillOpacity:.9}).addTo(map)
    .bindTooltip(e+' '+a.name,{permanent:true,direction:'right',offset:[8,0]})
    .bindPopup('<b>'+e+' '+a.name+'</b>');

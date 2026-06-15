@@ -12,19 +12,70 @@ body{font-family:'맑은 고딕','Noto Sans KR',sans-serif;background:#0f0f1a}
 #hdr h1{font-size:16px;font-weight:700}
 #hdr .s{font-size:11px;color:#9ca3af}
 #map{height:calc(100vh - 44px)}
-.al{background:#fff;border:2px solid #1e3a6e;border-radius:4px;padding:3px 6px;font-size:10px;line-height:1.4;white-space:nowrap;box-shadow:0 1px 5px rgba(0,0,0,.4)}
+.al{background:rgba(255,255,255,.98);border:2.5px solid #0f2f66;border-radius:5px;padding:5px 8px;font-size:12px;line-height:1.45;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.5)}
 .al.st{background:#fffbeb;border-color:#d97706;border-width:2.5px}
-.al .n{font-weight:700;font-size:10.5px;color:#1e3a6e}
+.al .n{font-weight:800;font-size:12.5px;color:#0f2f66;letter-spacing:-.2px}
 .al.st .n{color:#92400e}
-.al .i{color:#666;font-size:9.5px}
+.al .i{color:#3f3f46;font-size:11px;font-weight:700}
 #leg{position:absolute;bottom:26px;right:10px;z-index:9999;background:rgba(255,255,255,.94);border:1px solid #d1d5db;border-radius:8px;padding:8px 11px;font-size:11px;box-shadow:0 2px 8px rgba(0,0,0,.25);min-width:130px}
 #leg h4{font-size:11.5px;margin-bottom:5px;font-weight:700;color:#111}
 #leg .r{display:flex;align-items:center;gap:5px;margin:2px 0}
 .dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+
+.station-pin{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  background:#0b5bd3;
+  color:#fff;
+  border:2px solid #fff;
+  border-radius:999px;
+  padding:4px 8px;
+  font-size:12px;
+  font-weight:800;
+  white-space:nowrap;
+  box-shadow:0 2px 8px rgba(0,0,0,.45);
+}
+.station-pin .station-dot{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  background:#fff;
+  color:#0b5bd3;
+  font-size:12px;
+}
+
+
+.leaflet-tile-pane{
+  filter:saturate(1.08) contrast(1.04);
+}
+.leaflet-tooltip{
+  font-family:"Malgun Gothic","Noto Sans KR",sans-serif;
+  font-weight:800;
+}
+#zoomHint{
+  position:absolute;
+  top:58px;
+  left:10px;
+  z-index:9999;
+  background:rgba(255,255,255,.96);
+  border:1px solid #cbd5e1;
+  border-radius:8px;
+  padding:8px 11px;
+  font-size:12px;
+  font-weight:800;
+  color:#0f172a;
+  box-shadow:0 2px 8px rgba(0,0,0,.22);
+}
+
 </style></head>
 <body>
 <div id="hdr"><h1>🗺 서울시 서대문구·종로구</h1><span class="s">⭐ 저평가 추천단지 | 클릭 → 상세정보</span></div>
 <div id="map"></div>
+<div id="zoomHint">+ 버튼으로 더 확대하면 주변 단지명이 더 잘 보입니다</div>
 <div id="leg">
 <h4>범례</h4>
 <div class="r"><div class="dot" style="background:#2563eb"></div>지하철역</div>
@@ -36,8 +87,8 @@ body{font-family:'맑은 고딕','Noto Sans KR',sans-serif;background:#0f0f1a}
 <div class="r"><span style="font-size:12px">⭐</span> 저평가 추천</div>
 </div>
 <script>
-var map=L.map('map');
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
+var map=L.map('map',{maxZoom:22,zoomSnap:.25});
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxNativeZoom:19,maxZoom:22}).addTo(map);
 var bounds=[];
 var apts=[{"gu": "서대문구", "dong": "홍은동", "name": "북한산두산위브", "year": "20", "units": 497, "pyeong": 24, "star": false, "lat": 37.5799, "lng": 126.9306}, {"gu": "서대문구", "dong": "홍은동", "name": "북한산삼부르네상스", "year": "21", "units": 305, "pyeong": 32, "star": true, "lat": 37.5799, "lng": 126.932}, {"gu": "서대문구", "dong": "홍은동", "name": "서대문센트럴아이파크", "year": "25", "units": 827, "pyeong": 24, "star": true, "lat": 37.5799, "lng": 126.9334}, {"gu": "서대문구", "dong": "홍은동", "name": "풍림2차", "year": "90", "units": 390, "pyeong": 22, "star": false, "lat": 37.581, "lng": 126.9306}, {"gu": "서대문구", "dong": "홍은동", "name": "현대", "year": "89", "units": 610, "pyeong": 24, "star": false, "lat": 37.581, "lng": 126.932}, {"gu": "서대문구", "dong": "홍은동", "name": "홍은벽산", "year": "97", "units": 1329, "pyeong": 24, "star": false, "lat": 37.581, "lng": 126.9334}, {"gu": "서대문구", "dong": "홍은동", "name": "홍은풍림아이원", "year": "02", "units": 333, "pyeong": 34, "star": false, "lat": 37.5821, "lng": 126.9306}, {"gu": "종로구", "dong": "명륜2가", "name": "아남", "year": "95", "units": 436, "pyeong": 31, "star": false, "lat": 37.582, "lng": 127.003}, {"gu": "종로구", "dong": "창신동", "name": "창신쌍용1단지", "year": "92", "units": 585, "pyeong": 22, "star": false, "lat": 37.57645, "lng": 127.0113}, {"gu": "종로구", "dong": "창신동", "name": "창신쌍용2단지", "year": "93", "units": 919, "pyeong": 33, "star": true, "lat": 37.57645, "lng": 127.0127}];
 apts.forEach(function(a){
@@ -52,7 +103,15 @@ var COL={subway:'#2563eb',hospital:'#dc2626',dept:'#7c3aed',mart:'#7c3aed',schoo
 var EMJ={subway:'🚇',hospital:'🏥',dept:'🏬',mart:'🛒',school:'📚',commercial:'🏪',park:'🌳'};
 var ams=[{"name": "홍제역(3호선)", "lat": 37.5822, "lng": 126.935, "type": "subway"}, {"name": "혜화역(4호선)", "lat": 37.5824, "lng": 127.0017, "type": "subway"}, {"name": "한성대입구역(4호선)", "lat": 37.5887, "lng": 127.0083, "type": "subway"}, {"name": "동묘앞역(1호선)", "lat": 37.5718, "lng": 127.0161, "type": "subway"}, {"name": "성균관대학교", "lat": 37.588, "lng": 126.993, "type": "school"}, {"name": "연세대세브란스병원", "lat": 37.5623, "lng": 126.9407, "type": "hospital"}, {"name": "경복궁", "lat": 37.5796, "lng": 126.977, "type": "park"}, {"name": "명륜 상권", "lat": 37.582, "lng": 127.003, "type": "commercial"}, {"name": "북한산", "lat": 37.595, "lng": 126.97, "type": "park"}];
 ams.forEach(function(a){
-  var c=COL[a.type]||'#666';var e=EMJ[a.type]||'📍';
+  var c=COL[a.type]||'#666';var e=EMJ[a.type]||'•';
+  if(a.type==='subway'){
+    var h='<div class="station-pin"><span class="station-dot">🚇</span><span>'+a.name+'</span></div>';
+    L.marker([a.lat,a.lng],{
+      icon:L.divIcon({className:'',html:h,iconAnchor:[8,18]}),
+      zIndexOffset:900
+    }).addTo(map).bindPopup('<b>🚇 '+a.name+'</b>');
+    return;
+  }
   L.circleMarker([a.lat,a.lng],{radius:7,fillColor:c,color:'#fff',weight:2,opacity:1,fillOpacity:.9}).addTo(map)
    .bindTooltip(e+' '+a.name,{permanent:true,direction:'right',offset:[8,0]})
    .bindPopup('<b>'+e+' '+a.name+'</b>');
